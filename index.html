@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="ru"><head><meta charset="utf-8">
+<html lang="ru" data-theme="autumn"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Navo</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#07070d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Navo"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png">
+<title>Navo</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#231815"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Navo"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png">
 <style>
 :root{--bg:#07070d;--fg:#f2f2fa;--mut:#9a9ab4;--card:#ffffff14;--glass:#ffffff14;--acc:#b7a8ff;--acc2:#ff6b9d;--on:#fff;--p1:#7c6bff;--p2:#ff5c93;--g1:#3b2fb0aa;--g2:#ff5c9340;--g3:#1b1560;box-sizing:border-box;color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -83,6 +83,11 @@ textarea{width:100%;min-height:110px;background:var(--card);color:var(--fg);bord
 .brand svg{width:40px;height:40px;flex:none}
 .stp{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #ffffff1a;line-height:1.4}
 .stp b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--on);display:grid;place-items:center;font-size:14px}
+:root{--H:100%}
+#main,#full,#ov{bottom:auto;height:var(--H)}
+#nav{bottom:auto;top:calc(var(--H) - 76px - env(safe-area-inset-bottom,0px))}
+#mini{bottom:auto;top:calc(var(--H) - 146px - env(safe-area-inset-bottom,0px))}
+body::before{bottom:auto;height:calc(var(--H) + 400px)}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute"><defs>
 <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
@@ -123,7 +128,7 @@ textarea{width:100%;min-height:110px;background:var(--card);color:var(--fg);bord
 <script>
 var au=document.getElementById('au');
 var LOGO='<svg viewBox="0 0 64 64"><defs><linearGradient id="lgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--p1)"/><stop offset="1" style="stop-color:var(--p2)"/></linearGradient></defs><rect width="64" height="64" rx="18" fill="url(#lgg)"/><rect x=".5" y=".5" width="63" height="63" rx="17.5" fill="none" stroke="#ffffff55"/><path d="M13 38q6-16 12 0t12 0 12 0" fill="none" style="stroke:var(--on)" stroke-width="4.5" stroke-linecap="round"/><circle cx="46" cy="19" r="4.5" style="fill:var(--on)"/></svg>';
-var S={tracks:[],pls:[],fav:[],recent:[],theme:'mid',sort:'old',spd:1,sleep:0,view:'lib',q:'',queue:[],ci:-1,shuf:false,rep:0,url:null,db:null};
+var S={tracks:[],pls:[],fav:[],recent:[],theme:'autumn',sort:'old',spd:1,sleep:0,view:'lib',q:'',queue:[],ci:-1,shuf:false,rep:0,url:null,db:null};
 function $(i){return document.getElementById(i)}
 function ic(n,c){return '<svg class="i '+(c||'')+'"><use href="#i-'+n+'"/></svg>'}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
@@ -137,7 +142,7 @@ function getBlob(id){return new Promise(function(r){if(!S.db)return r(null);try{
 function delBlob(id){try{S.db.transaction('f','readwrite').objectStore('f').delete(id)}catch(e){}}
 function hue(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;return h}
 var THEMES={mid:{n:'Midnight',d:'Глубокая ночь, фиолетовый и розовый',bg:'#07070d',sw:['#07070d','#7c6bff','#ff5c93'],pal:[['#6a5bff','#2a1e7a'],['#ff5c93','#7a1e4a'],['#3b82f6','#14306e'],['#a855f7','#4a1d7a'],['#f97362','#7a2a2a'],['#22b8cf','#0e4a5a']]},autumn:{n:'Autumn',d:'Тёплый шоколад, персик и пыльная роза',bg:'#231815',sw:['#231815','#f3c3a0','#e8a5a0'],pal:[['#d98b6a','#8f4a35'],['#d9969a','#8a4a56'],['#dcae6a','#8f6a2e'],['#9db08a','#5a7050'],['#b98aa0','#6e4560'],['#eaa27e','#a85d3a']]}};
-var PAL=THEMES.mid.pal;
+var PAL=THEMES.autumn.pal;
 function grad(s){var p=PAL[hue(s)%6];return 'linear-gradient(135deg,'+p[0]+','+p[1]+')'}
 function cv(t){return '<div class="cov" style="background:'+grad(t.title+t.artist)+'">'+esc((t.title[0]||'♪').toUpperCase())+'</div>'}
 function fmt(s){if(!isFinite(s))return '0:00';var m=Math.floor(s/60),x=Math.floor(s%60);return m+':'+(x<10?'0':'')+x}
@@ -224,5 +229,7 @@ au.ontimeupdate=function(){var d=au.duration;if(d){$('sk').value=au.currentTime/
 $('sk').oninput=function(){if(au.duration)au.currentTime=this.value/1000*au.duration};
 $('fdown').innerHTML=ic('down');$('bspd').textContent='1×';$('bslp').innerHTML=ic('moon');$('bq').innerHTML=ic('list');$('bs').innerHTML=ic('shuf');$('bpv').innerHTML=ic('prev','f');$('bnx').innerHTML=ic('next','f');$('mini').lastElementChild.previousElementSibling.nextElementSibling;
 document.querySelectorAll('#mini .ib')[1].innerHTML=ic('next','f');
+function fit(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);if(!sa){r.style.removeProperty('--H');return}var p=innerHeight>=innerWidth,sh=p?Math.max(screen.height,screen.width):Math.min(screen.height,screen.width);if(sh>innerHeight+8)r.style.setProperty('--H',sh+'px');else r.style.removeProperty('--H')}
+fit();addEventListener('resize',fit);addEventListener('orientationchange',function(){setTimeout(fit,250)});
 loadTheme();loadMeta();openDB().then(function(){S.tracks.forEach(function(t){delete t.blob});syncBtns();pstate();updFav();render()});
 </script><script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script></body></html>
