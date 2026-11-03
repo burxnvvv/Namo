@@ -83,8 +83,8 @@ textarea{width:100%;min-height:110px;background:var(--card);color:var(--fg);bord
 .brand svg{width:40px;height:40px;flex:none}
 .stp{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #ffffff1a;line-height:1.4}
 .stp b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--on);display:grid;place-items:center;font-size:14px}
-:root{--sab:env(safe-area-inset-bottom,0px)}
-#nav{left:0;right:0;bottom:0;max-width:none;margin:0;border-radius:0;border:0;border-top:1px solid #ffffff1f;box-shadow:none;padding:8px 10px calc(8px + var(--sab));background:var(--bg)}
+:root{--sab-min:8px;--sab:max(env(safe-area-inset-bottom,0px),var(--sab-min))}
+#nav{left:12px;right:12px;bottom:calc(var(--sab) + 6px);max-width:520px;margin:0 auto;border-radius:30px;padding:7px 6px;border:1px solid #ffffff30;background:linear-gradient(135deg,#ffffff2b,#ffffff0d);box-shadow:inset 0 1px 0 #ffffff66,inset 0 -1px 0 #ffffff14,0 10px 30px #0006}
 #nav button{flex:1}
 #mini{bottom:calc(var(--sab) + 80px)}
 #full{padding-bottom:calc(var(--sab) + 24px)}
@@ -96,8 +96,11 @@ h1{font-size:clamp(26px,8.6vw,34px)}
 #main{padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
 @media (max-height:700px){#fcov{width:min(64vw,300px,34vh);font-size:64px;margin-bottom:10px}#bp{width:62px;height:62px}.ctl{margin:8px 0 4px}input[type=range]{margin-top:8px}#ft{font-size:20px}}
 @media (max-width:360px){.row .cov{width:46px;height:46px}.pill{padding:10px 8px;font-size:14px}#nav button{padding:6px 6px}.rb{width:36px;height:36px}}
-@media (min-width:760px){#nav{left:50%;right:auto;width:560px;transform:translateX(-50%);border-radius:22px 22px 0 0}#main{padding-left:24px;padding-right:24px}.grid{grid-template-columns:repeat(4,1fr)}}
+@media (min-width:760px){#nav{left:50%;right:auto;width:520px;transform:translateX(-50%)}#main{padding-left:24px;padding-right:24px}.grid{grid-template-columns:repeat(4,1fr)}}
 @media (orientation:landscape) and (max-height:520px){#full{flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 28px}#full .top{position:absolute;top:calc(env(safe-area-inset-top,0px) + 8px);left:16px;width:auto}#fcov{width:min(46vh,220px);margin:0}.fi{width:min(52vw,420px)}#nav button{flex-direction:row;justify-content:center;gap:6px;padding:6px 12px}#mini{bottom:calc(var(--sab) + 58px)}#main{padding-bottom:150px}}
+body::before{background:linear-gradient(180deg,var(--bg) 150px,transparent 320px),radial-gradient(60% 40% at 12% 24%,var(--g1) 0,transparent 70%),radial-gradient(45% 35% at 95% 38%,var(--g2) 0,transparent 70%),radial-gradient(70% 50% at 25% 100%,var(--g3) 0,transparent 70%),var(--bg)}
+#full{background:linear-gradient(180deg,var(--bg) 0,transparent 140px),radial-gradient(70% 45% at 20% 14%,var(--g1),transparent 70%),radial-gradient(50% 35% at 100% 60%,var(--g2),transparent 70%),var(--bg)}
+#main{padding-top:calc(env(safe-area-inset-top,0px) + clamp(10px,2.2vh,24px))}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute"><defs>
 <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
@@ -239,7 +242,7 @@ au.ontimeupdate=function(){var d=au.duration;if(d){$('sk').value=au.currentTime/
 $('sk').oninput=function(){if(au.duration)au.currentTime=this.value/1000*au.duration};
 $('fdown').innerHTML=ic('down');$('bspd').textContent='1×';$('bslp').innerHTML=ic('moon');$('bq').innerHTML=ic('list');$('bs').innerHTML=ic('shuf');$('bpv').innerHTML=ic('prev','f');$('bnx').innerHTML=ic('next','f');$('mini').lastElementChild.previousElementSibling.nextElementSibling;
 document.querySelectorAll('#mini .ib')[1].innerHTML=ic('next','f');
-function fit(){var r=document.documentElement,sa=navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);var sh=sa&&innerHeight>=innerWidth&&innerHeight<Math.max(screen.height,screen.width)-8;if(sh)r.style.setProperty('--sab','0px');else r.style.removeProperty('--sab')}
+function fit(){var r=document.documentElement,a=Math.max(screen.width,screen.height),b=Math.min(screen.width,screen.height),tall=a/b>=1.9;r.style.setProperty('--sab-min',tall?(innerHeight>=innerWidth?'24px':'14px'):'8px')}
 fit();addEventListener('resize',fit);addEventListener('orientationchange',function(){setTimeout(fit,250)});
 loadTheme();loadMeta();openDB().then(function(){S.tracks.forEach(function(t){delete t.blob});syncBtns();pstate();updFav();render()});
 </script><script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script></body></html>
