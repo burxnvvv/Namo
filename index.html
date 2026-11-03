@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru" data-theme="autumn"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Navo</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#231815"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Navo"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navo</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#231815"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="Navo"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png">
 <style>
 :root{--bg:#07070d;--fg:#f2f2fa;--mut:#9a9ab4;--card:#ffffff14;--glass:#ffffff14;--acc:#b7a8ff;--acc2:#ff6b9d;--on:#fff;--p1:#7c6bff;--p2:#ff5c93;--g1:#3b2fb0aa;--g2:#ff5c9340;--g3:#1b1560;box-sizing:border-box;color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -84,11 +84,20 @@ textarea{width:100%;min-height:110px;background:var(--card);color:var(--fg);bord
 .stp{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #ffffff1a;line-height:1.4}
 .stp b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--on);display:grid;place-items:center;font-size:14px}
 :root{--sab:env(safe-area-inset-bottom,0px)}
-#nav{left:0;right:0;bottom:0;max-width:none;margin:0;border-radius:0;border:0;border-top:1px solid #ffffff1f;box-shadow:none;padding:8px 10px calc(8px + var(--sab));background:var(--bg);background:color-mix(in srgb,var(--bg) 90%,#fff 5%)}
+#nav{left:0;right:0;bottom:0;max-width:none;margin:0;border-radius:0;border:0;border-top:1px solid #ffffff1f;box-shadow:none;padding:8px 10px calc(8px + var(--sab));background:var(--bg)}
 #nav button{flex:1}
 #mini{bottom:calc(var(--sab) + 80px)}
 #full{padding-bottom:calc(var(--sab) + 24px)}
 #sh{padding-bottom:calc(var(--sab) + 18px)}
+html{-webkit-text-size-adjust:100%;overscroll-behavior:none}
+body{touch-action:manipulation;-webkit-user-select:none;user-select:none;overscroll-behavior:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+h1{font-size:clamp(26px,8.6vw,34px)}
+#main{padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+@media (max-height:700px){#fcov{width:min(64vw,300px,34vh);font-size:64px;margin-bottom:10px}#bp{width:62px;height:62px}.ctl{margin:8px 0 4px}input[type=range]{margin-top:8px}#ft{font-size:20px}}
+@media (max-width:360px){.row .cov{width:46px;height:46px}.pill{padding:10px 8px;font-size:14px}#nav button{padding:6px 6px}.rb{width:36px;height:36px}}
+@media (min-width:760px){#nav{left:50%;right:auto;width:560px;transform:translateX(-50%);border-radius:22px 22px 0 0}#main{padding-left:24px;padding-right:24px}.grid{grid-template-columns:repeat(4,1fr)}}
+@media (orientation:landscape) and (max-height:520px){#full{flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 28px}#full .top{position:absolute;top:calc(env(safe-area-inset-top,0px) + 8px);left:16px;width:auto}#fcov{width:min(46vh,220px);margin:0}.fi{width:min(52vw,420px)}#nav button{flex-direction:row;justify-content:center;gap:6px;padding:6px 12px}#mini{bottom:calc(var(--sab) + 58px)}#main{padding-bottom:150px}}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute"><defs>
 <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
