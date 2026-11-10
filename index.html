@@ -101,6 +101,7 @@ h1{font-size:clamp(26px,8.6vw,34px)}
 body::before{background:linear-gradient(180deg,var(--bg) 150px,transparent 320px),radial-gradient(60% 40% at 12% 24%,var(--g1) 0,transparent 70%),radial-gradient(45% 35% at 95% 38%,var(--g2) 0,transparent 70%),radial-gradient(70% 50% at 25% 100%,var(--g3) 0,transparent 70%),var(--bg)}
 #full{background:linear-gradient(180deg,var(--bg) 0,transparent 140px),radial-gradient(70% 45% at 20% 14%,var(--g1),transparent 70%),radial-gradient(50% 35% at 100% 60%,var(--g2),transparent 70%),var(--bg)}
 #main{padding-top:calc(env(safe-area-inset-top,0px) + clamp(10px,2.2vh,24px))}
+#mseek{position:absolute;left:0;right:0;bottom:0;height:22px;touch-action:none;z-index:2}#mseek::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:#ffffff1f}#mpb{height:3px;z-index:3;pointer-events:none}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute"><defs>
 <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
@@ -222,13 +223,13 @@ function themeSheet(){sh('<h3>Тема</h3>'+Object.keys(THEMES).map(function(k)
 function playAll(sh){var a=cur();if(!a.length)return;S.shuf=sh;syncBtns();var id=a[Math.floor(Math.random()*a.length)].id;if(!sh)id=a[0].id;playFrom(id)}
 function playFrom(id){S.queue=cur().map(function(t){return t.id});if(S.shuf){S.queue.sort(function(){return Math.random()-.5});S.queue=[id].concat(S.queue.filter(function(x){return x!==id}))}S.ci=S.queue.indexOf(id);playCur()}
 async function playCur(){var t=byId(S.queue[S.ci]);if(!t)return;if(!t.has){toast('К треку не прикреплён mp3 (меню ⋯)');return}
-initAudio();if(AC&&AC.state==='suspended')AC.resume();var tk=S.tk=(S.tk||0)+1;if(!au.paused&&au.src){setGain(0,.3);await wait(330);if(tk!==S.tk)return}var src=t.blob;if(!src){var b=await getBlob(t.id);if(!b){t.has=false;save();toast('Файл не найден, прикрепите заново');render();return}if(S.url)URL.revokeObjectURL(S.url);S.url=URL.createObjectURL(b);src=S.url}
+initAudio();if(AC&&AC.state==='suspended')AC.resume();var tk=S.tk=(S.tk||0)+1;if(GN&&!au.paused&&au.src){setGain(0,.3);await wait(330);if(tk!==S.tk)return}var src=t.blob||S.uc[t.id];if(!src){var b=await getBlob(t.id);if(!b){t.has=false;save();toast('Файл не найден, прикрепите заново');render();return}src=ucPut(t.id,b)}
 au.src=src;setGain(0,0);try{await au.play()}catch(e){}setGain(1,.9);
 $('mini').style.display='flex';S.recent=[t.id].concat(S.recent.filter(function(x){return x!==t.id})).slice(0,10);save();var g=grad(t.title+t.artist),l=(t.title[0]||'♪').toUpperCase();
 $('mc').style.background=g;$('mc').textContent=l;$('fcov').style.background=g;$('fcov').textContent=l;$('fbg').style.background=g;
 $('mt').textContent=$('ft').textContent=t.title;$('ma').textContent=$('fa').textContent=t.artist;anim();updFav();render();
 if('mediaSession' in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:t.title,artist:t.artist});navigator.mediaSession.setActionHandler('nexttrack',function(){step(1)});navigator.mediaSession.setActionHandler('previoustrack',function(){step(-1)})}catch(e){}}}
-async function toggle(){if(!au.src)return;if(AC&&AC.state==='suspended')AC.resume();if(au.paused){setGain(0,0);try{await au.play()}catch(e){}setGain(1,.35)}else{setGain(0,.25);await wait(270);au.pause()}}
+async function toggle(){if(!au.src)return;if(AC&&AC.state==='suspended')AC.resume();if(au.paused){setGain(0,0);try{await au.play()}catch(e){}setGain(1,.35)}else{if(GN){setGain(0,.25);await wait(270)}au.pause()}}
 function step(d){if(!S.queue.length)return;if(d<0&&au.currentTime>3){au.currentTime=0;return}var n=S.ci+d;if(n>=S.queue.length){if(S.rep===1)n=0;else return}if(n<0)n=0;S.ci=n;playCur()}
 function tgS(){S.shuf=!S.shuf;syncBtns();toast(S.shuf?'Перемешивание включено':'Перемешивание выключено')}
 function tgR(){S.rep=(S.rep+1)%3;syncBtns();toast(['Повтор выключен','Повтор всех','Повтор трека'][S.rep])}
@@ -302,7 +303,7 @@ function viz(){if(!$('full').classList.contains('open')){S.vz=0;return}requestAn
 var _of=openFull;openFull=function(){_of();wake();if(!S.vz){S.vz=1;viz()}};
 var _cf=closeFull;closeFull=function(){_cf();if(WL){WL.release();WL=null}};
 document.querySelector('.ex').insertAdjacentHTML('beforeend','<button class="ib" onclick="lyrSheet(S.queue[S.ci])">Aa</button>');
-(function(){var f=$('full'),y0=null,m=$('mini'),x0=null;f.addEventListener('touchstart',function(e){if(e.target.type==='range'||e.target.closest('button'))return;y0=e.touches[0].clientY},{passive:true});f.addEventListener('touchend',function(e){if(y0===null)return;var d=e.changedTouches[0].clientY-y0;y0=null;if(d>110)closeFull()},{passive:true});m.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});m.addEventListener('touchend',function(e){if(x0===null)return;var d=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(d)>70){step(d<0?1:-1);m.dataset.sw=1;setTimeout(function(){delete m.dataset.sw},350)}},{passive:true});m.addEventListener('click',function(e){if(m.dataset.sw)e.stopImmediatePropagation()},true)})();
+(function(){var f=$('full'),y0=null,m=$('mini'),x0=null;f.addEventListener('touchstart',function(e){if(e.target.type==='range'||e.target.closest('button'))return;y0=e.touches[0].clientY},{passive:true});f.addEventListener('touchend',function(e){if(y0===null)return;var d=e.changedTouches[0].clientY-y0;y0=null;if(d>110)closeFull()},{passive:true});m.addEventListener('touchstart',function(e){x0=e.target.id==='mseek'?null:e.touches[0].clientX},{passive:true});m.addEventListener('touchend',function(e){if(x0===null)return;var d=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(d)>70){step(d<0?1:-1);m.dataset.sw=1;setTimeout(function(){delete m.dataset.sw},350)}},{passive:true});m.addEventListener('click',function(e){if(m.dataset.sw)e.stopImmediatePropagation()},true)})();
 var _w=setInterval(function(){if(S.db){clearInterval(_w);loadCovers();persist()}},120);setTimeout(function(){clearInterval(_w)},6000);
 
 try{S.fx=localStorage.getItem('fx')==='1'}catch(e){S.fx=false}
@@ -312,4 +313,16 @@ function fxToggle(){S.fx=!S.fx;try{localStorage.setItem('fx',S.fx?'1':'0')}catch
 var _eq=eqSheet;eqSheet=function(){_eq();var h=$('sh').querySelector('h3');h.insertAdjacentHTML('afterend','<div class="a" style="line-height:1.5;margin-bottom:10px">'+(S.fx?'Включён. На iPhone из-за него музыка может останавливаться при блокировке экрана.':'Сейчас выключен, чтобы музыка играла при заблокированном экране и в других приложениях.')+'</div><button class="pill'+(S.fx?'':' p')+'" style="width:100%;margin-bottom:12px" onclick="fxToggle()">'+(S.fx?'Выключить эквалайзер и волну':'Включить эквалайзер и волну')+'</button>')};
 document.addEventListener('visibilitychange',function(){if(AC&&AC.state!=='running')AC.resume()});
 if('mediaSession' in navigator){var ms=navigator.mediaSession;[['play',function(){au.play()}],['pause',function(){au.pause()}],['stop',function(){au.pause()}],['seekto',function(d){if(d.seekTime!=null)au.currentTime=d.seekTime}]].forEach(function(a){try{ms.setActionHandler(a[0],a[1])}catch(e){}});au.addEventListener('timeupdate',function(){try{if(au.duration)ms.setPositionState({duration:au.duration,position:Math.min(au.currentTime,au.duration),playbackRate:au.playbackRate||1})}catch(e){}});au.addEventListener('play',function(){ms.playbackState='playing'});au.addEventListener('pause',function(){ms.playbackState='paused'})}
+
+S.uc={};S.ucq=[];au.preload='auto';
+function ucPut(id,b){var u=URL.createObjectURL(b);S.uc[id]=u;S.ucq.push(id);while(S.ucq.length>4){var o=S.ucq.shift();if(o!==S.queue[S.ci]){URL.revokeObjectURL(S.uc[o]);delete S.uc[o]}else S.ucq.push(o)}return u}
+var _pf=playFrom;playFrom=function(id){var t=byId(id);if(t){$('mini').style.display='flex';$('mt').textContent=t.title;$('ma').textContent=t.artist}_pf(id)};
+var _pc2=playCur;playCur=async function(){await _pc2();var n=byId(S.queue[S.ci+1]);if(n&&n.has&&!n.blob&&!S.uc[n.id])getBlob(n.id).then(function(b){if(b&&!S.uc[n.id])ucPut(n.id,b)})};
+var ms2=document.createElement('div');ms2.id='mseek';$('mini').appendChild(ms2);
+function mseek(e){var r=ms2.getBoundingClientRect();if(au.duration)au.currentTime=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*au.duration}
+ms2.addEventListener('pointerdown',function(e){e.stopPropagation();try{ms2.setPointerCapture(e.pointerId)}catch(x){}S.sk=1;mseek(e)});
+ms2.addEventListener('pointermove',function(e){if(S.sk)mseek(e)});
+ms2.addEventListener('pointerup',function(){S.sk=0});ms2.addEventListener('pointercancel',function(){S.sk=0});ms2.addEventListener('click',function(e){e.stopPropagation()});
+function msPos(){try{if(au.duration&&isFinite(au.duration))navigator.mediaSession.setPositionState({duration:au.duration,position:Math.min(au.currentTime,au.duration),playbackRate:au.playbackRate||1})}catch(e){}}
+['loadedmetadata','durationchange','seeked','play'].forEach(function(n){au.addEventListener(n,msPos)});
 </script><script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script></body></html>
